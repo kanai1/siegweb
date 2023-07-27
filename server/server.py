@@ -56,11 +56,12 @@ class Server:
         # 이후에 db, server에 flag 넣을 때 사용해야 하므로 self 지정
         self.flag_dict = {}
 
-        # 딕셔너리에 데이터베이스, 서버의 FLAG 추가
+        # 딕셔너리에 데이터베이스, 서버, XSS의 FLAG 추가
         for user in self.user_dict:
             self.flag_dict[user] = [
                 self.generate_flag(user, "db"),
                 self.generate_flag(user, "server"),
+                self.generate_flag(user, "xss"),
             ]
 
         # json 파일에 쓰기
@@ -94,6 +95,19 @@ class Server:
                     key + "_server",
                     self.user_dict[key][2],
                     300,
+                    self.user_dict[key][1],
+                )
+            except IndexError:
+                pass
+        
+        # XSS challenge 생성
+        for key in self.user_dict:
+            try:
+                sql += "(%d, '%s', '%s', 0, %d, '%s', 'standard', 'visible')," % (
+                    self.user_dict[key][0] + self.select_last("challenges") + (2*len(self.user_dict)), #이게 맞는지 모르겠네 ㅎㅎ
+                    key + "_xss",
+                    self.user_dict[key][2],
+                    200,
                     self.user_dict[key][1],
                 )
             except IndexError:
@@ -134,6 +148,22 @@ class Server:
                     + len(self.user_dict),
                     "static",
                     self.flag_dict[key][1],
+                )
+            except IndexError:
+                pass
+        
+        # XSS FLAG 생성
+        for key in self.user_dict:
+            try:
+                sql += "(%d, %d, '%s', '%s')," % (
+                    self.user_dict[key][0]
+                    + self.select_last("flags")
+                    + (2 * len(self.user_dict)),
+                    self.user_dict[key][0]
+                    + self.select_last("flags")
+                    + (2 * len(self.user_dict)),
+                    "static",
+                    self.flag_dict[key][2],
                 )
             except IndexError:
                 pass
