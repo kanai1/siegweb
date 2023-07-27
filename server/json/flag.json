@@ -1,4 +1,4 @@
 {
-    "userA": ["flag{}", "flag{}"],
-    "userB": ["flag{}", "flag{}"]
+    "userA": ["flag{}", "flag{}", "flag{}"],
+    "userB": ["flag{}", "flag{}", "flag{}"]
 }
